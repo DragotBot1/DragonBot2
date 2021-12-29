@@ -232,52 +232,52 @@ function kyun(seconds){
 }
 
 async function starts() {
-	const client = new WAConnection()
-	client.version = [2, 2147, 14]
-	client.autoReconnect = ReconnectMode.onConnectionLost;
-        client.logger.level = 'warn'
+	const ochoa = new WAConnection()
+	ochoa.version = [2, 2147, 14]
+	ochoa.autoReconnect = ReconnectMode.onConnectionLost;
+        ochoa.logger.level = 'warn'
 	console.log(banner.string)
-	client.on('qr', () => {
+	ochoa.on('qr', () => {
 		console.log(color('[','white'), color('!','red'), color(']','white'), color('Escanea el codigo QR rapido!!!'))
 	})
 
-	fs.existsSync('./Nazwa.json') && client.loadAuthInfo('./Nazwa.json')
-	client.on('connecting', () => {
+	fs.existsSync('./Nazwa.json') && ochoa.loadAuthInfo('./Nazwa.json')
+	ochoa.on('connecting', () => {
 		start('2', 'Estas desconectado')
 	})
-	client.on('open', () => {
+	ochoa.on('open', () => {
 		success('2', 'Conectado by 𝑶𝒄𝒉𝒐𝒂⁶⁶⁶')
 	})
-	await client.connect({timeoutMs: 30*1000})
-        fs.writeFileSync('./Nazwa.json', JSON.stringify(client.base64EncodedAuthInfo(), null, '\t'))
+	await ochoa.connect({timeoutMs: 30*1000})
+        fs.writeFileSync('./Nazwa.json', JSON.stringify(ochoa.base64EncodedAuthInfo(), null, '\t'))
 
-	client.on('group-participants-update', async (anu) => {
+	ochoa.on('group-participants-update', async (anu) => {
 		if (!welkom.includes(anu.jid)) return
 		try {
-			const mdata = await client.groupMetadata(anu.jid)
+			const mdata = await ochoa.groupMetadata(anu.jid)
 			console.log(anu)
 			if (anu.action == 'add') {
 				num = anu.participants[0]
 				teks = `HOLA GUAPA * LA NALGUEA* @${num.split('@')[0]} ¿COMO ESTAS? APARTE DE GUAPA\n\n『BIENVENIDOS A ESTA MIERDA LLAMADA *${mdata.subject}*』\n\nLEE LAS REGLAS OE\n\n_RESPETA A LOS ADMINS Y HAZME ZING :D_\n\n*TOY TRISTE, ME MANDAS PACK Y NOBIAMOS*`
-                          client.sendMessage(mdata.id, teks, MessageType.text, { contextInfo: {"mentionedJid": [num]}})
+                          ochoa.sendMessage(mdata.id, teks, MessageType.text, { contextInfo: {"mentionedJid": [num]}})
 			} else if (anu.action == 'remove') {
 				num = anu.participants[0]
 				teks = `Bueno, se fue @${num.split('@')[0]}\n\nUNA PUTA MENOS PA CUIDAR`
-				client.sendMessage(mdata.id, teks, MessageType.text, {contextInfo: {"mentionedJid": [num]}})
+				ochoa.sendMessage(mdata.id, teks, MessageType.text, {contextInfo: {"mentionedJid": [num]}})
 			}
 		} catch (e) {
 			console.log('Error: %s', color(e, 'red'))
 		}
 	})
 
-		client.on('CB:Blocklist', json => {
+		ochoa.on('CB:Blocklist', json => {
             if (blocked.length > 2) return
 	    for (let i of json[1].blocklist) {
 	    	blocked.push(i.replace('c.us','s.whatsapp.net'))
 	    }
 	})
 
-	client.on('chat-update', async (mek) => {
+	ochoa.on('chat-update', async (mek) => {
 		try {
                         if (!mek.hasNewMessage) return
                         mek = JSON.parse(JSON.stringify(mek)).messages[0]
@@ -297,7 +297,7 @@ async function starts() {
 			budy = (type === 'conversation') ? mek.message.conversation : (type === 'extendedTextMessage') ? mek.message.extendedTextMessage.text : ''
 			const command = body.slice(1).trim().split(/ +/).shift().toLowerCase()
 			const args = body.trim().split(/ +/).slice(1)
-			let authorname = client.contacts[from] != undefined ? client.contacts[from].vname || client.contacts[from].notify : undefined
+			let authorname = ochoa.contacts[from] != undefined ? ochoa.contacts[from].vname || ochoa.contacts[from].notify : undefined
 			const isCmd = body.startsWith(prefix)
 
 			mess = {
@@ -336,13 +336,13 @@ async function starts() {
 			}
     			const apakah = ['Si','No']
                         const kapankah = ['Otro día','Otra semana','Otro mes','Otro año']
-			const botNumber = client.user.jid
+			const botNumber = ochoa.user.jid
 			const ownerNumber = ["573146224366@s.whatsapp.net"] // replace this with your number
 			const nomorOwner = [ownerNumber]
 	                const isGroup = from.endsWith('@g.us')
-			const totalchat = await client.chats.all()
+			const totalchat = await ochoa.chats.all()
 			const sender = isGroup ? mek.participant : mek.key.remoteJid
-			const groupMetadata = isGroup ? await client.groupMetadata(from) : ''
+			const groupMetadata = isGroup ? await ochoa.groupMetadata(from) : ''
 			const isBanned = ban.includes(sender)
 			const groupName = isGroup ? groupMetadata.subject : ''
 			const isAntiLink = isGroup ? antilink.includes(from) : false
@@ -364,8 +364,8 @@ async function starts() {
                         const isUser = user.includes(sender)
                         const isLevelingOn = isGroup ? _leveling.includes(groupId) : false
                         const NomerOwner = '573146224366@s.whatsapp.net'
-                        const conts = mek.key.fromMe ? client.user.jid : client.contacts[sender] || { notify: jid.replace(/@.+/, '') }
-                        const pushname = mek.key.fromMe ? client.user.name : conts.notify || conts.vname || conts.name || '-'
+                        const conts = mek.key.fromMe ? ochoa.user.jid : ochoa.contacts[sender] || { notify: jid.replace(/@.+/, '') }
+                        const pushname = mek.key.fromMe ? ochoa.user.name : conts.notify || conts.vname || conts.name || '-'
 			
 			//......................
 			
@@ -373,13 +373,13 @@ async function starts() {
 			    return url.match(new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/, 'gi'))
 			}
 			const reply = (teks) => {
-				client.sendMessage(from, teks, text, {quoted:mek})
+				ochoa.sendMessage(from, teks, text, {quoted:mek})
 			}
 			const sendMess = (hehe, teks) => {
-				client.sendMessage(hehe, teks, text)
+				ochoa.sendMessage(hehe, teks, text)
 			}
 			const mentions = (teks, memberr, id) => {
-				(id == null || id == undefined || id == false) ? client.sendMessage(from, teks.trim(), extendedText, {contextInfo: {"mentionedJid": memberr}}) : client.sendMessage(from, teks.trim(), extendedText, {quoted: mek, contextInfo: {"mentionedJid": memberr}})
+				(id == null || id == undefined || id == false) ? ochoa.sendMessage(from, teks.trim(), extendedText, {contextInfo: {"mentionedJid": memberr}}) : ochoa.sendMessage(from, teks.trim(), extendedText, {quoted: mek, contextInfo: {"mentionedJid": memberr}})
 			}
            
 //LINKS DE WHATSAPP	
@@ -388,14 +388,14 @@ if (budy.includes("https://wa.me/")){
 		if (!isGroup) return
 		if (!isAntiWa) return
                 if (isGroupAdmins) return reply('Eres un administrador del grupo, así que no te prohibiré el uso de enlaces :)')
-		client.updatePresence(from, Presence.composing)
+		ochoa.updatePresence(from, Presence.composing)
 		var kic = `${sender.split("@")[0]}@s.whatsapp.net`
 		reply(`*LINK DE WHATSAPP DETECTADO 📢* ${sender.split("@")[0]} Usted sera eliminado de este grupo`)
 		setTimeout( () => {
-			client.groupRemove(from, [kic]).catch((e)=>{reply(`*ERR:* ${e}`)})
+			ochoa.groupRemove(from, [kic]).catch((e)=>{reply(`*ERR:* ${e}`)})
 		}, 0)
 		setTimeout( () => {
-			client.updatePresence(from, Presence.composing)
+			ochoa.updatePresence(from, Presence.composing)
 			reply("Adios Puta")
 		}, 0)
 	}
@@ -404,14 +404,14 @@ if (budy.includes("https://wa.me/")){
 		if (!isGroup) return
 		if (!isAntiWa) return
                 if (isGroupAdmins) return reply('Eres un administrador del grupo, así que no te prohibiré el uso de enlaces :)')
-		client.updatePresence(from, Presence.composing)
+		ochoa.updatePresence(from, Presence.composing)
 		var kic = `${sender.split("@")[0]}@s.whatsapp.net`
 		reply(`*LINK DE WHATSAPP DETECTADO 📢* ${sender.split("@")[0]} Usted sera eliminado de este grupo`)
 		setTimeout( () => {
-			client.groupRemove(from, [kic]).catch((e)=>{reply(`*ERR:* ${e}`)})
+			ochoa.groupRemove(from, [kic]).catch((e)=>{reply(`*ERR:* ${e}`)})
 		}, 0)
 		setTimeout( () => {
-			client.updatePresence(from, Presence.composing)
+			ochoa.updatePresence(from, Presence.composing)
 			reply("Adios Puta")
 		}, 0)
 	}
@@ -426,14 +426,14 @@ if (budy.includes("https://www.facebook.com/")){
 		if (!isGroup) return
 		if (!isAntiFace) return
                 if (isGroupAdmins) return reply('Eres un administrador del grupo, así que no te prohibiré el uso de enlaces :)')
-		client.updatePresence(from, Presence.composing)
+		ochoa.updatePresence(from, Presence.composing)
 		var kic = `${sender.split("@")[0]}@s.whatsapp.net`
 		reply(`*LINK DE FACEBOOK DETECTADO 📢* ${sender.split("@")[0]} Usted sera eliminado de este grupo`)
 		setTimeout( () => {
-			client.groupRemove(from, [kic]).catch((e)=>{reply(`*ERR:* ${e}`)})
+			ochoa.groupRemove(from, [kic]).catch((e)=>{reply(`*ERR:* ${e}`)})
 		}, 0)
 		setTimeout( () => {
-			client.updatePresence(from, Presence.composing)
+			ochoa.updatePresence(from, Presence.composing)
 			reply("Adios mi loco")
 		}, 0)
 	}			
@@ -442,14 +442,14 @@ if (budy.includes("https://m.facebook.com/")){
 		if (!isGroup) return
 		if (!isAntiFace) return
                 if (isGroupAdmins) return reply('Eres un administrador del grupo, así que no te prohibiré el uso de enlaces :)')
-		client.updatePresence(from, Presence.composing)
+		ochoa.updatePresence(from, Presence.composing)
 		var kic = `${sender.split("@")[0]}@s.whatsapp.net`
 		reply(`*LINK DE FACEBOOK DETECTADO 📢* ${sender.split("@")[0]} Usted sera eliminado de este grupo`)
 		setTimeout( () => {
-			client.groupRemove(from, [kic]).catch((e)=>{reply(`*ERR:* ${e}`)})
+			ochoa.groupRemove(from, [kic]).catch((e)=>{reply(`*ERR:* ${e}`)})
 		}, 0)
 		setTimeout( () => {
-			client.updatePresence(from, Presence.composing)
+			ochoa.updatePresence(from, Presence.composing)
 			reply("Adios mi loco")
 		}, 0)
 	}
@@ -463,14 +463,14 @@ if (budy.includes("https://m.facebook.com/")){
 		if (!isGroup) return
 		if (!isAntiDiscord) return
                 if (isGroupAdmins) return reply('Eres un administrador del grupo, así que no te prohibiré el uso de enlaces :)')
-		client.updatePresence(from, Presence.composing)
+		ochoa.updatePresence(from, Presence.composing)
 		var kic = `${sender.split("@")[0]}@s.whatsapp.net`
 		reply(`*LINK DE DISCORD DETECTADO 📢* ${sender.split("@")[0]} Usted sera eliminado de este grupo`)
 		setTimeout( () => {
-			client.groupRemove(from, [kic]).catch((e)=>{reply(`*ERR:* ${e}`)})
+			ochoa.groupRemove(from, [kic]).catch((e)=>{reply(`*ERR:* ${e}`)})
 		}, 0)
 		setTimeout( () => {
-			client.updatePresence(from, Presence.composing)
+			ochoa.updatePresence(from, Presence.composing)
 			reply("Adios mi loco")
 		}, 0)
 	}
@@ -479,14 +479,14 @@ if (budy.includes("https://m.facebook.com/")){
 		if (!isGroup) return
 		if (!isAntiKwai) return
                 if (isGroupAdmins) return reply('Eres un administrador del grupo, así que no te prohibiré el uso de enlaces :)')
-		client.updatePresence(from, Presence.composing)
+		ochoa.updatePresence(from, Presence.composing)
 		var kic = `${sender.split("@")[0]}@s.whatsapp.net`
 		reply(`*LINK DE KWAI DETECTADO 📢* ${sender.split("@")[0]} Usted sera eliminado de este grupo`)
 		setTimeout( () => {
-			client.groupRemove(from, [kic]).catch((e)=>{reply(`*ERR:* ${e}`)})
+			ochoa.groupRemove(from, [kic]).catch((e)=>{reply(`*ERR:* ${e}`)})
 		}, 0)
 		setTimeout( () => {
-			client.updatePresence(from, Presence.composing)
+			ochoa.updatePresence(from, Presence.composing)
 			reply("Adios Puta")
 		}, 0)
 	}
@@ -495,14 +495,14 @@ if (budy.includes("https://m.facebook.com/")){
 		if (!isGroup) return
 		if (!isAntInsta) return
 	        if (isGroupAdmins) return reply('Eres un administrador del grupo, así que no te prohibiré el uso de enlaces :)')
-		client.updatePresence(from, Presence.composing)
+		ochoa.updatePresence(from, Presence.composing)
 		var kic = `${sender.split("@")[0]}@s.whatsapp.net`
 		reply(`*LINK DE INSTAGRAM DETECTADO 📢* ${sender.split("@")[0]} Usted sera eliminado de este grupo`)
 		setTimeout( () => {
-			client.groupRemove(from, [kic]).catch((e)=>{reply(`*ERR:* ${e}`)})
+			ochoa.groupRemove(from, [kic]).catch((e)=>{reply(`*ERR:* ${e}`)})
 		}, 0)
 		setTimeout( () => {
-			client.updatePresence(from, Presence.composing)
+			ochoa.updatePresence(from, Presence.composing)
 			reply("Adios Puta")
 		}, 0)
 	}		
@@ -511,14 +511,14 @@ if (budy.includes("https://m.facebook.com/")){
 		if (!isGroup) return
 		if (!isAntiTik) return
                 if (isGroupAdmins) return reply('Eres un administrador del grupo, así que no te prohibiré el uso de enlaces :)')
-		client.updatePresence(from, Presence.composing)
+		ochoa.updatePresence(from, Presence.composing)
 		var kic = `${sender.split("@")[0]}@s.whatsapp.net`
 		reply(`*LINK DE TIK TOK DETECTADO 📢* ${sender.split("@")[0]} Usted sera eliminado de este grupo`)
 		setTimeout( () => {
-			client.groupRemove(from, [kic]).catch((e)=>{reply(`*ERR:* ${e}`)})
+			ochoa.groupRemove(from, [kic]).catch((e)=>{reply(`*ERR:* ${e}`)})
 		}, 0)
 		setTimeout( () => {
-			client.updatePresence(from, Presence.composing)
+			ochoa.updatePresence(from, Presence.composing)
 			reply("Adios Puta")
 		}, 0)
 	}
@@ -527,14 +527,14 @@ if (budy.includes("https://m.facebook.com/")){
 		if (!isGroup) return
 		if (!isAntiLink) return
 		if (isGroupAdmins) return reply('Eres un administrador del grupo, así que no te prohibiré el uso de enlaces :)')
-		client.updatePresence(from, Presence.composing)
+		ochoa.updatePresence(from, Presence.composing)
 		var kic = `${sender.split("@")[0]}@s.whatsapp.net`
 		reply(`*LINK DE WHATSAPP DETECTADO 📢* ${sender.split("@")[0]} Usted será expulsado del grupo`)
 		setTimeout( () => {
-			client.groupRemove(from, [kic]).catch((e)=>{reply(`*ERR:* ${e}`)})
+			ochoa.groupRemove(from, [kic]).catch((e)=>{reply(`*ERR:* ${e}`)})
 		}, 0)
 		setTimeout( () => {
-			client.updatePresence(from, Presence.composing)
+			ochoa.updatePresence(from, Presence.composing)
 			reply("Adios Puta")
 		}, 0)
 	}
@@ -623,54 +623,54 @@ if (budy.includes("https://m.facebook.com/")){
 			switch(command) {
 		case 'm':
 		case 'menu':
-	        client.sendMessage(from, help(prefix, sender), text, {quoted: mek})
+	        ochoa.sendMessage(from, help(prefix, sender), text, {quoted: mek})
                 const none = fs.readFileSync('./mp3/menu.mp3');
-		client.sendMessage(from, none, MessageType.audio, {quoted: mek, mimetype: 'audio/mp4', ptt:true})
+		ochoa.sendMessage(from, none, MessageType.audio, {quoted: mek, mimetype: 'audio/mp4', ptt:true})
 		break
                 case 'otak':
-		client.sendMessage(from, otak(prefix, sender), text, {quoted: mek})
+		ochoa.sendMessage(from, otak(prefix, sender), text, {quoted: mek})
 		break
 		case 'juegos':
-		client.sendMessage(from, juegos(prefix, sender), text, {quoted: mek})
+		ochoa.sendMessage(from, juegos(prefix, sender), text, {quoted: mek})
 		break
 		case 'idioma':
-		client.sendMessage(from, bahasa(prefix, sender), text, {quoted: mek})
+		ochoa.sendMessage(from, bahasa(prefix, sender), text, {quoted: mek})
 		break
 		case 'levelmenu':
-		client.sendMessage(from, levelmenu(prefix, sender), text, {quoted: mek})
+		ochoa.sendMessage(from, levelmenu(prefix, sender), text, {quoted: mek})
 		break
 		case 'shanmenu':
-		client.sendMessage(from, toinmenu(prefix, sender), text, {quoted: mek})
+		ochoa.sendMessage(from, toinmenu(prefix, sender), text, {quoted: mek})
 		break
 		case 'menuadmin':
-		client.sendMessage(from, menuadmin(prefix, sender), text, {quoted: mek})
+		ochoa.sendMessage(from, menuadmin(prefix, sender), text, {quoted: mek})
 		break
 		case 'nsfwmenu':
-		client.sendMessage(from, nsfwmenu(prefix, sender), text, {quoted: mek})
+		ochoa.sendMessage(from, nsfwmenu(prefix, sender), text, {quoted: mek})
 		break
 		case 'banmenu':
-		client.sendMessage(from, banmenu(prefix, sender), text, {quoted: mek})
+		ochoa.sendMessage(from, banmenu(prefix, sender), text, {quoted: mek})
 		break
 		case 'desmenu':
-		client.sendMessage(from, desmenu(prefix, sender), text, {quoted: mek})
+		ochoa.sendMessage(from, desmenu(prefix, sender), text, {quoted: mek})
 		break
 		case 'versión':
 		case 'version':
-		client.sendMessage(from, version(prefix, sender), text, {quoted: mek})
+		ochoa.sendMessage(from, version(prefix, sender), text, {quoted: mek})
 		break
 		case 'antimenu':
-		client.sendMessage(from, antimenu(prefix, sender), text, {quoted: mek})
+		ochoa.sendMessage(from, antimenu(prefix, sender), text, {quoted: mek})
 		break
                 case 'welmenu':
-		client.sendMessage(from, welmenu(prefix, sender), text, {quoted: mek})
+		ochoa.sendMessage(from, welmenu(prefix, sender), text, {quoted: mek})
 		break
 		case 'shantera':
-		client.sendMessage(from, shantera(prefix, sender), text, {quoted: mek})
+		ochoa.sendMessage(from, shantera(prefix, sender), text, {quoted: mek})
 		break
 					
 		case 'virtex':
 	       case 'troleo':
-               client.sendMessage(from, virtex(prefix, sender), text, {quoted: mek})
+               ochoa.sendMessage(from, virtex(prefix, sender), text, {quoted: mek})
                break
                             
 
@@ -717,7 +717,7 @@ break
 case 'gay':
 if (!isUser) return reply(mess.only.daftarB)
 rate = body.slice(5)
-client.updatePresence(from, Presence.composing) 
+ochoa.updatePresence(from, Presence.composing) 
 random = `${Math.floor(Math.random() * 100)}`
 gay = random
 if (gay < 20 ) {ga = 'Usted es hetero 🤪🤙'} else if (gay == 21 ) {ga = 'Mas o menos 🤔'} else if (gay == 23 ) {ga = 'Mas o menos 🤔'} else if (gay == 24 ) {ga = 'Mas o menos 🤔'} else if (gay == 25 ) {ga = 'Mas o menos 🤔'} else if (gay == 26 ) {ga = 'Mas o menos 🤔'} else if (gay == 27 ) {ga = 'Mas o menos 🤔'} else if (gay == 28 ) {ga = 'Mas o menos 🤔'} else if (gay == 29 ) {ga = 'Mas o menos 🤔'} else if (gay == 30 ) {ga = 'Mas o menos 🤔'} else if (gay == 31 ) {ga = 'Tengo mi dudas 😑'} else if (gay == 32 ) {ga = 'Tengo mi dudas 😑'} else if (gay == 33 ) {ga = 'Tengo mi dudas 😑'} else if (gay == 34 ) {ga = 'Tengo mi dudas 😑'} else if (gay == 35 ) {ga = 'Tengo mi dudas 😑'} else if (gay == 36 ) {ga = 'Tengo mi dudas 😑'} else if (gay == 37 ) {ga = 'Tengo mi dudas 😑'} else if (gay == 38 ) {ga = 'TTengo mi dudas 😑'} else if (gay == 39 ) {ga = 'Tengo mi dudas 😑'} else if (gay == 40 ) {ga = 'Tengo mi dudas 😑'} else if (gay == 41 ) {ga = 'Tengo razon? 😏'} else if (gay == 42 ) {ga = 'Tengo razon? 😏'} else if (gay == 43 ) {ga = 'Tengo razon? 😏'} else if (gay == 44 ) {ga = 'Tengo razon? 😏'} else if (gay == 45 ) {ga = 'Tengo razon? 😏'} else if (gay == 46 ) {ga = 'Tengo razon? 😏'} else if (gay == 47 ) {ga = 'Tengo razon? 😏'} else if (gay == 48 ) {ga = 'Tengo razon? 😏'} else if (gay == 49 ) {ga = 'Tengo razon? 😏'} else if (gay == 50 ) {ga = 'Eres o no? 🧐'} else if (gay > 51) {ga = 'Usted es gay 🥸'}
@@ -728,7 +728,7 @@ break
 case 'cuties':
 if (!isUser) return reply(mess.only.daftarB)
 rate = body.slice(8)
-client.updatePresence(from, Presence.composing) 
+ochoa.updatePresence(from, Presence.composing) 
 random = `${Math.floor(Math.random() * 100)}`
 cuties = random
 if (cuties < 20 ) {cu = 'Mi loco usted va para el cielo 👏'} else if (cuties == 21 ) {cu = 'Te salvaste ramirez 😎'} else if (cuties == 23 ) {cu = 'Te salvaste ramirez 😎'} else if (cuties == 24 ) {cu = 'Te salvaste ramirez 😎'} else if (cuties == 25 ) {cu = 'Te salvaste ramirez 😎'} else if (cuties == 26 ) {cu = 'Te salvaste ramirez 😎'} else if (cuties == 27 ) {cu = 'Te salvaste ramirez 😎'} else if (cuties == 28 ) {cu = 'Te salvaste ramirez 😎'} else if (cuties == 29 ) {cu = 'Te salvaste ramirez 😎'} else if (cuties == 30 ) {cu = 'Te salvaste ramirez 😎'} else if (cuties == 31 ) {cu = 'Ramirez que hace viendo cuties 🤔'} else if (cuties == 32 ) {cu = 'Ramirez que hace viendo cuties 🤔'} else if (cuties == 33 ) {cu = 'Ramirez que hace viendo cuties 🤔'} else if (cuties == 34 ) {cu = 'Ramirez que hace viendo cuties 🤔'} else if (cuties == 35 ) {cu = 'Ramirez que hace viendo cuties 🤔'} else if (cuties == 36 ) {cu = 'Ramirez que hace viendo cuties 🤔'} else if (cuties == 37 ) {cu = 'Ramirez que hace viendo cuties 🤔'} else if (cuties == 38 ) {cu = 'Ramirez que hace viendo cuties 🤔'} else if (cuties == 39 ) {cu = 'Ramirez que hace viendo cuties 🤔'} else if (cuties == 40 ) {cu = 'Ramirez que hace viendo cuties 🤔'} else if (cuties == 41 ) {cu = 'Mmm sospechoso ramirez 🧐'} else if (cuties == 42 ) {cu = 'Mmm sospechoso ramirez 🧐'} else if (cuties == 43 ) {cu = 'Mmm sospechoso ramirez 🧐'} else if (cuties == 44 ) {cu = 'Mmm sospechoso ramirez 🧐'} else if (cuties == 45 ) {cu = 'Mmm sospechoso ramirez 🧐'} else if (cuties == 46 ) {cu = 'Mmm sospechoso ramirez 🧐'} else if (cuties == 47 ) {cu = 'Mmm sospechoso ramirez 🧐'} else if (cuties == 48 ) {cu = 'Mmm sospechoso ramirez 🧐'} else if (cuties == 49 ) {cu = 'Mmm sospechoso ramirez 🧐'} else if (cuties == 50 ) {cu = 'Mmm sospechoso ramirez 🧐'} else if (cuties > 51) {cu = 'Señores un autentico FAN DE CUTIES esta en el grupo 🥸'}
@@ -739,7 +739,7 @@ break
 case 'racista':
 if (!isUser) return reply(mess.only.daftarB)
 rate = body.slice(9)
-client.updatePresence(from, Presence.composing) 
+ochoa.updatePresence(from, Presence.composing) 
 random = `${Math.floor(Math.random() * 100)}`
 racista = random
 if (racista < 20 ) {ra = 'Tu no eres racista 👏'} else if (racista == 21 ) {ra = 'Mmm tengos mi dudas 🧐'} else if (racista == 23 ) {ra = 'Mmm tengos mi dudas 🧐'} else if (racista == 24 ) {ra = 'Mmm tengos mi dudas 🧐'} else if (racista == 25 ) {ra = 'Mmm tengos mi dudas 🧐'} else if (racista == 26 ) {ra = 'Mmm tengos mi dudas 🧐'} else if (racista == 27 ) {ra = 'Mmm tengos mi dudas 🧐'} else if (racista == 28 ) {ra = 'Mmm tengos mi dudas 🧐'} else if (racista == 29 ) {ra = 'Mmm tengos mi dudas 🧐'} else if (racista == 30 ) {ra = 'Mmm tengos mi dudas 🧐'} else if (racista == 31 ) {ra = 'Eres racista en secreto 🙀'} else if (racista == 32 ) {ra = 'Eres racista en secreto 🙀'} else if (racista == 33 ) {ra = 'Eres racista en secreto 🙀'} else if (racista == 34 ) {ra = 'Eres racista en secreto 🙀'} else if (racista == 35 ) {ra = 'Eres racista en secreto 🙀'} else if (racista == 36 ) {ra = 'Eres racista en secreto 🙀'} else if (racista == 37 ) {ra = 'Eres racista en secreto 🙀'} else if (racista == 38 ) {ra = 'Eres racista en secreto 🙀'} else if (racista == 39 ) {ra = 'Eres racista en secreto 🙀'} else if (racista == 40 ) {ra = 'Eres racista en secreto 🙀'} else if (racista == 41 ) {ra = 'Fuck men alto racista 😡'} else if (racista == 42 ) {ra = 'Fuck men alto racista 😡'} else if (racista == 43 ) {ra = 'Fuck men alto racista 😡'} else if (racista == 44 ) {ra = 'Fuck men alto racista 😡'} else if (racista == 45 ) {ra = 'Fuck men alto racista 😡'} else if (racista == 46 ) {ra = 'Fuck men alto racista 😡'} else if (racista == 47 ) {ra = 'Fuck men alto racista 😡'} else if (racista == 48 ) {ra = 'Fuck men alto racista 😡'} else if (racista == 49 ) {ra = 'Fuck men alto racista 😡'} else if (racista == 50 ) {ra = 'Fuck men alto racista 😡'} else if (racista > 51) {ra = 'UN AUTENTICO RACISTA 🥸'}
@@ -770,12 +770,12 @@ break
 					
        				case 'wa.me':
 				  case 'wame':
-  client.updatePresence(from, Presence.composing) 
+  ochoa.updatePresence(from, Presence.composing) 
       options = {
           text: `「 *LINK WHATSAPP* 」\n\n_Solicitado por_ : @${sender.split("@s.whatsapp.net")[0]}\n\nSu link de Whatsapp : *https://wa.me/${sender.split("@s.whatsapp.net")[0]}*\n*O ( / )*\n*https://api.whatsapp.com/send?phone=${sender.split("@")[0]}*`,
           contextInfo: { mentionedJid: [sender] }
     }
-    client.sendMessage(from, options, text, { quoted: mek } )
+    ochoa.sendMessage(from, options, text, { quoted: mek } )
 				break
 				if (data.error) return reply(data.error)
 				reply(data.result)
@@ -783,18 +783,18 @@ break
 		
 	
 	case 'creador':
-	       client.sendMessage(from, {displayname: "𝑶𝒄𝒉𝒐𝒂⁶⁶⁶", vcard: vcard}, MessageType.contact, { quoted: mek})
-		client.sendMessage(from, 'Hola 👋 te saluda Ochoa, este es un mensaje predeterminado al igual que el audio.\n\nArriba esta mi contacto por si tienen algun problema con las descargas o yo que se.\nYo soy dueño de este bot y lo controlo, yo cree la base de datos y le doy mantenimiento.\nEl numero osea mi contacto de arriba no es un bot, si te dio pereza escuchar el audio gordito trolo.\nBueno disfruten del bot.\n\n_*by 𝑶𝒄𝒉𝒐𝒂⁶⁶⁶*_',MessageType.text, { quoted: mek} )
+	       ochoa.sendMessage(from, {displayname: "𝑶𝒄𝒉𝒐𝒂⁶⁶⁶", vcard: vcard}, MessageType.contact, { quoted: mek})
+		ochoa.sendMessage(from, 'Hola 👋 te saluda Ochoa, este es un mensaje predeterminado al igual que el audio.\n\nArriba esta mi contacto por si tienen algun problema con las descargas o yo que se.\nYo soy dueño de este bot y lo controlo, yo cree la base de datos y le doy mantenimiento.\nEl numero osea mi contacto de arriba no es un bot, si te dio pereza escuchar el audio gordito trolo.\nBueno disfruten del bot.\n\n_*by 𝑶𝒄𝒉𝒐𝒂⁶⁶⁶*_',MessageType.text, { quoted: mek} )
                  break
 	
 	
 	case 'x':
-                client.updatePresence(from, Presence.composing) 
+                ochoa.updatePresence(from, Presence.composing) 
                 if (!isGroupAdmins) return reply(mess.only.Badmin)
 		if (!isUser) return reply(mess.only.daftarB)
                 if (!isGroup) return reply(mess.only.group)
                 teks = body.slice(3)
-                group = await client.groupMetadata(from);
+                group = await ochoa.groupMetadata(from);
                 member = group['participants']
                 jids = [];
                 member.map( async adm => {
@@ -805,14 +805,14 @@ break
                 contextInfo: {mentionedJid: jids},
                 quoted: mek
                 }
-              await client.sendMessage(from, options, text)
+              await ochoa.sendMessage(from, options, text)
                break
                                case 'tts':
-				   client.updatePresence(from, Presence.recording) 
-				   if (args.length < 1) return client.sendMessage(from, 'Cual es el código de idioma?\n\nPara saber el codigo de idioma coloque el comando ${prefix}idioma', text, {quoted: mek})
+				   ochoa.updatePresence(from, Presence.recording) 
+				   if (args.length < 1) return ochoa.sendMessage(from, 'Cual es el código de idioma?\n\nPara saber el codigo de idioma coloque el comando ${prefix}idioma', text, {quoted: mek})
                                    if (!isUser) return reply(mess.only.daftarB)
 					const gtts = require('./lib/gtts')(args[0])
-					if (args.length < 2) return client.sendMessage(from, 'Y el texto?', text, {quoted: mek})
+					if (args.length < 2) return ochoa.sendMessage(from, 'Y el texto?', text, {quoted: mek})
 					dtt = body.slice(8)
 					ranm = getRandom('.mp3')
 					rano = getRandom('.ogg')
@@ -830,7 +830,7 @@ break
 					break
                                 case 'admins':
 				case 'dioses':
-					client.updatePresence(from, Presence.composing) 
+					ochoa.updatePresence(from, Presence.composing) 
                                         if (!isUser) return reply(mess.only.daftarB)
 					if (!isGroup) return reply(mess.only.group)
 					teks = `*Lista De Administradores Del Grupo*\n\n${groupMetadata.subject}\n\nTotal: ${groupAdmins.length}\n\n`
@@ -842,7 +842,7 @@ break
 					mentions(teks, groupAdmins, true)
 					break
 			case 'setprefix':
-					client.updatePresence(from, Presence.composing) 
+					ochoa.updatePresence(from, Presence.composing) 
 					if (args.length < 1) return
 					if (!isOwner) return reply(mess.only.ownerB)
 					prefix = args[0]
@@ -854,7 +854,7 @@ break
 			 if (!isOwner) return reply('tu quien eres para decirme que hacer!?🤔')
                                         reply('Me apagare en 3 Segundos....')
                                         setTimeout( () => {
-                                        client.close() }, 3000)
+                                        ochoa.close() }, 3000)
                                         break
 			
 			case 'actualizar':
@@ -879,7 +879,7 @@ break
 			case 'tagall':
 		        case 'putas':
 			case 'todos':
-				client.updatePresence(from, Presence.composing) 
+				ochoa.updatePresence(from, Presence.composing) 
 					if (!isGroup) return reply(mess.only.group)
                                         if (!isUser) return reply(mess.only.daftarB)
 					if (!isGroupAdmins) return reply(mess.only.admin)
@@ -896,25 +896,25 @@ break
 					var pc = body.slice(6)
 					var nomor = pc.split("|")[0];
 					var pesan = pc.split("|")[1];
-					client.sendMessage(nomor+'@s.whatsapp.net', pesan, text)
+					ochoa.sendMessage(nomor+'@s.whatsapp.net', pesan, text)
 					break
 				case 'setppbot':
-				client.updatePresence(from, Presence.composing) 
+				ochoa.updatePresence(from, Presence.composing) 
 				if (!isQuotedImage) return reply(`Sube fotos con subtítulos ${prefix}Ok`)
 					if (!isOwner) return reply(mess.only.ownerB)
 					enmedia = JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo
-					media = await client.downloadAndSaveMediaMessage(enmedia)
-					await client.updateProfilePicture(botNumber, media)
+					media = await ochoa.downloadAndSaveMediaMessage(enmedia)
+					await ochoa.updateProfilePicture(botNumber, media)
 					reply('Gracias por el nuevo perfil')
 					break
 				case 'bc':
-					client.updatePresence(from, Presence.composing) 
+					ochoa.updatePresence(from, Presence.composing) 
 					if (!isOwner) return reply(mess.only.ownerB)
 					if (args.length < 1) return reply('.......')
 					anu = await client.chats.all()
 					if (isMedia && !mek.message.videoMessage || isQuotedImage) {
 						const encmedia = isQuotedImage ? JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo : mek
-						buff = await client.downloadMediaMessage(encmedia)
+						buff = await ochoa.downloadMediaMessage(encmedia)
 						for (let _ of anu) {
 							client.sendMessage(_.jid, buff, image, {caption: `*「 TRANSMISIÓN 」*\n\n${body.slice(4)}`})
 						}
