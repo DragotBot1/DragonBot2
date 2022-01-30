@@ -1481,18 +1481,6 @@ break
 														
 	//FIN DE SERVICIO DE MUSICA Y VIDEO			
 				
-//REGISTRO				
-
-case 'daftar':
-client.updatePresence(from, Presence.composing)
-if (isUser) return reply('Ya estas registrado pendejo')
-if (args.length < 1) return reply(`Incorrecto ❎\nComando: ${prefix}daftar Nombre\n\nEjemplo: ${prefix}daftar dragón`)
-var reg = body.slice(8)
-var nombre = reg.split("|")[0];
-user.push(sender)
-fs.writeFileSync('./database/json/user.json', JSON.stringify(user))
-client.sendMessage(from, `\`\`\`REGISTRADO ✅\`\`\`\n\n\`\`\`DNI: PUTA BARATA XDXD\`\`\`\n\n\`\`\`Hora MX: ${time}\`\`\`\n\n\`\`\`Fecha: ${date}\`\`\`\n\n\`\`\`[Usuario]: ${nombre}\`\`\`\n\`\`\`[Número]: wa.me/${sender.split("@")[0]}\`\`\`\n\n\`\`\`Para usar el bot\`\`\`\n\`\`\`Por favor\`\`\`\n\`\`\`enviar ${prefix}menu\`\`\`\n\`\`\`\nTotal de usuários: ${user.length}\`\`\``, text, {quoted: mek})
-break
                                 
 //FIN DE REGISTRO  
 				
