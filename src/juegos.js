@@ -16,7 +16,7 @@ Conoce que tan racista eres
 
 _*Pronto Agregare El ttt*_
      
-_*by Ochoa*_
+ By Dragón
 `
 
 }
